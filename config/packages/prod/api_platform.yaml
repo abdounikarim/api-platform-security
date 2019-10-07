@@ -1,0 +1,3 @@
+#api_platform:
+#  enable_entrypoint: false
+#  enable_docs: false
