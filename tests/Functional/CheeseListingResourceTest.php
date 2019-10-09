@@ -2,12 +2,11 @@
 
 namespace App\Tests\Functional;
 
-use ApiPlatform\Core\Bridge\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Hautelook\AliceBundle\PhpUnit\ReloadDatabaseTrait;
 
-class CheeseListingResourceTest extends ApiTestCase
+class CheeseListingResourceTest extends CustomApiTestCase
 {
     use ReloadDatabaseTrait;
 
@@ -16,29 +15,16 @@ class CheeseListingResourceTest extends ApiTestCase
         $client = self::createClient();
 
         $client->request('POST', '/api/cheeses', [
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
             'json' => []
         ]);
         $this->assertResponseStatusCodeSame(401);
 
-        $user = new User();
-        $user->setEmail('toto@toto.com');
-        $user->setUsername('toto');
-        $user->setPassword('$argon2id$v=19$m=65536,t=4,p=1$vVLMeNjbK3EouSZAN9Zokw$jm7OChGMBss+IItzpuehDSi2FWC+S7UMEa2CYYQ+Z78');
 
-        $em = self::$container->get(EntityManagerInterface::class);
-        $em->persist($user);
-        $em->flush();
+        $this->createUserAndLogIn($client,'toto@toto.com', 'foo');
 
         $client->request('POST', '/login', [
-            'headers' => ['Content-Type' => 'application/json'],
-            'json' => [
-                'email' => 'toto@toto.com',
-                'password' => 'foo'
-            ],
+            'json' => [],
         ]);
-        $this->assertResponseStatusCodeSame(204);
+        $this->assertResponseStatusCodeSame(400);
     }
 }
